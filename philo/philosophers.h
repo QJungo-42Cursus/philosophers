@@ -6,12 +6,17 @@ typedef enum e_bool {
 	TRUE
 }	t_bool;
 
+enum e_success {
+	SUCCESS,
+	ERROR,
+};
+
 typedef struct e_program {
-	int		number_of_philosophers;
+	int		n_philosopher;
 	int		time_to_die;
 	int		time_to_eat;
 	int		time_to_sleep;
-	int		number_of_times_each_philosopher_must_eat;
+	int		must_eat;
 }	t_program;
 
 typedef enum e_state {
