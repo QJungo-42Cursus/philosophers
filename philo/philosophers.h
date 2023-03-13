@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:03:43 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 10:07:54 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 11:19:32 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,9 @@ typedef struct e_program {
 }	t_program;
 
 typedef enum e_state {
-	EATING,
-	THINKING,
-	SLEEPING,
-	DEAD
+	WAITING,
+	READY,
+	DEAD,
 }	t_state;
 
 typedef struct s_fork {

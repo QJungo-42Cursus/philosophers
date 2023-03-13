@@ -35,7 +35,7 @@ re: fclean all
 # time_to_eat
 # time_to_sleep
 # [number_of_times_each_philosopher_must_eat]
-ARGS_DEAD = 3 2000 200 200
+ARGS_DEAD = 3 310 200 200
 ARGS_NICE = 6 1000 200 200
 
 
@@ -79,7 +79,7 @@ san:
 	@echo -e "San : $(ARGS_DEAD)\n\n" '\n'
 	@gcc -g $(SAN) $(SRCS) -o $(NAME)
 	./$(NAME) $(ARGS_DEAD)
-	./$(NAME) $(ARGS_NICE)
+	#./$(NAME) $(ARGS_NICE)
 
 
 db:

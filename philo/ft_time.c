@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:05:10 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 10:05:10 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 11:00:10 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	custom_sleep(long ms, t_program *program)
 	now = start;
 	while (now < ms + start)
 	{
-		usleep(10);
+		usleep(1);
 		now = get_timestamp_from_start(program->start_timestamp);
 	}
 }
