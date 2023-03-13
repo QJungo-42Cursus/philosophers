@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:03:43 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:19:32 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 12:10:04 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ void	*philosopher_routine(void *philosopher_ptr);
 
 // init.c
 int		init_program(t_program *program);
+int		init_all(t_program *program, t_philosopher **philosophers,
+			t_fork **forks);
 int		init_forks(t_fork **forks, t_program *program);
 int		init_philosophers(t_philosopher **philosophers,
 			t_program *program, t_fork *forks);
@@ -71,12 +73,16 @@ int		init_philosophers(t_philosopher **philosophers,
 // state.c
 t_bool	check_is_one_dead(t_philosopher *philosopher);
 t_bool	check_is_dead(t_philosopher *philosopher);
+t_bool	should_stop(t_philosopher *philosophers, t_program *program);
+t_bool	should_start(t_philosopher *philosophers, t_program *program);
 
 // ft_log
 void	ft_log(t_philosopher *philosopher, char *msg);
 
 // ft_free.c
 void	free_forks(t_fork *forks, t_program *program);
+void	free_all(t_fork *forks, t_program *program,
+			t_philosopher *philosophers);
 
 // ft_atoi.c
 int		ft_atoi(const char *str);

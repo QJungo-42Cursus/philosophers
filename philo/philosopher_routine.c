@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:04:26 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:16:49 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 12:10:15 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ static void	init_routine(t_philosopher **philosopher, void *philosopher_ptr)
 	(*philosopher)->last_meal_timestamp = 0;
 	(*philosopher)->eat_count = 0;
 	while ((*philosopher)->program->start_timestamp == 0)
-		usleep(1);
-	ft_log(*philosopher, "wakes up");
+		(void)0;
 }
 
 static void	eat(t_philosopher *philosopher)

@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:03:39 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:26:46 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 12:09:54 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,27 +57,6 @@ static int	parse_args_set_program(int argc, char **argv, t_program *program)
 	return (SUCCESS);
 }
 
-static int	init_all(t_program *program, t_philosopher **philosophers,
-		t_fork **forks	)
-{
-	if (init_program(program) == ERROR)
-		return (ERROR);
-	if (init_forks(forks, program) == ERROR)
-	{
-		pthread_mutex_destroy(&program->is_one_dead_mutex);
-		pthread_mutex_destroy(&program->print_mutex);
-		return (ERROR);
-	}
-	if (init_philosophers(philosophers, program, *forks) == ERROR)
-	{
-		pthread_mutex_destroy(&program->is_one_dead_mutex);
-		pthread_mutex_destroy(&program->print_mutex);
-		free_forks(*forks, program);
-		return (ERROR);
-	}
-	return (SUCCESS);
-}
-
 static int	run(t_program *program, t_philosopher *philosophers)
 {
 	int		i;
@@ -90,44 +69,6 @@ static int	run(t_program *program, t_philosopher *philosophers)
 		i++;
 	}
 	return (SUCCESS);
-}
-t_bool	should_stop(t_philosopher *philosophers, t_program *program)
-{
-	int		i;
-	t_bool	all_eat;
-
-	pthread_mutex_lock(&program->is_one_dead_mutex);
-	if (program->is_one_dead)
-		return (TRUE);
-	pthread_mutex_unlock(&program->is_one_dead_mutex);
-	i = 0;
-	all_eat = TRUE;
-	while (i < program->n_philosopher)
-	{
-		if (philosophers[i].eat_count < program->n_must_eat)
-		{
-			all_eat = FALSE;
-			break ;
-		}
-		i++;
-	}
-	if (program->n_must_eat != -1 && all_eat)
-		return (TRUE);
-	return (FALSE);
-}
-
-static t_bool	should_start(t_philosopher *philosophers, t_program *program)
-{
-	int		i;
-
-	i = 0;
-	while (i < program->n_philosopher)
-	{
-		if (philosophers[i].state == WAITING)
-			return (FALSE);
-		i++;
-	}
-	return (TRUE);
 }
 
 int	main(int argc, char **argv)
@@ -151,9 +92,10 @@ int	main(int argc, char **argv)
 		return (ERROR);
 	}
 	while (!should_start(philosophers, &program))
-		usleep(100);
+		usleep(10);
 	program.start_timestamp = get_timestamp();
 	while (!should_stop(philosophers, &program))
 		usleep(100);
+	free_all(forks, &program, philosophers);
 	return (SUCCESS);
 }

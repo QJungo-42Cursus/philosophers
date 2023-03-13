@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:04:10 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:24:24 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 12:00:51 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ int	init_forks(t_fork **forks, t_program *program)
 	i = 0;
 	while (i < program->n_philosopher)
 	{
+		(*forks)[i].index = i;
+		(*forks)[i].is_used = FALSE;
 		if (pthread_mutex_init(&(*forks)[i].mutex, NULL) != SUCCESS)
 		{
 			free(*forks);
 			return (ERROR);
 		}
-		(*forks)[i].index = i;
-		(*forks)[i].is_used = FALSE;
 		i++;
 	}
 	return (SUCCESS);
@@ -83,6 +83,27 @@ int	init_philosophers(t_philosopher **philosophers,
 			return (ERROR);
 		}
 		i++;
+	}
+	return (SUCCESS);
+}
+
+int	init_all(t_program *program, t_philosopher **philosophers,
+		t_fork **forks)
+{
+	if (init_program(program) == ERROR)
+		return (ERROR);
+	if (init_forks(forks, program) == ERROR)
+	{
+		pthread_mutex_destroy(&program->is_one_dead_mutex);
+		pthread_mutex_destroy(&program->print_mutex);
+		return (ERROR);
+	}
+	if (init_philosophers(philosophers, program, *forks) == ERROR)
+	{
+		pthread_mutex_destroy(&program->is_one_dead_mutex);
+		pthread_mutex_destroy(&program->print_mutex);
+		free_forks(*forks, program);
+		return (ERROR);
 	}
 	return (SUCCESS);
 }

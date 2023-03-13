@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:05:16 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:10:20 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/13 12:04:15 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,43 @@ t_bool	check_is_dead(t_philosopher *philosopher)
 		return (TRUE);
 	}
 	return (FALSE);
+}
+
+t_bool	should_stop(t_philosopher *philosophers, t_program *program)
+{
+	int		i;
+	t_bool	all_eat;
+
+	pthread_mutex_lock(&program->is_one_dead_mutex);
+	if (program->is_one_dead)
+		return (TRUE);
+	pthread_mutex_unlock(&program->is_one_dead_mutex);
+	i = 0;
+	all_eat = TRUE;
+	while (i < program->n_philosopher)
+	{
+		if (philosophers[i].eat_count < program->n_must_eat)
+		{
+			all_eat = FALSE;
+			break ;
+		}
+		i++;
+	}
+	if (program->n_must_eat != -1 && all_eat)
+		return (TRUE);
+	return (FALSE);
+}
+
+t_bool	should_start(t_philosopher *philosophers, t_program *program)
+{
+	int		i;
+
+	i = 0;
+	while (i < program->n_philosopher)
+	{
+		if (philosophers[i].state == WAITING)
+			return (FALSE);
+		i++;
+	}
+	return (TRUE);
 }
