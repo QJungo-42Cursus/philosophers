@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/13 10:03:43 by qjungo            #+#    #+#             */
+/*   Updated: 2023/03/13 10:07:54 by qjungo           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 # include <pthread.h>
-# include "utils.h"
 
 typedef enum e_bool {
 	FALSE,
@@ -66,7 +77,6 @@ t_bool	check_is_dead(t_philosopher *philosopher);
 void	ft_log(t_philosopher *philosopher, char *msg);
 
 // ft_free.c
-void	free_philosophers(t_philosopher *philosophers, t_program *program);
 void	free_forks(t_fork *forks, t_program *program);
 
 // ft_atoi.c

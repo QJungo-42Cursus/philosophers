@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/13 10:04:10 by qjungo            #+#    #+#             */
+/*   Updated: 2023/03/13 10:04:14 by qjungo           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <pthread.h>
 #include <sys/time.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "philosophers.h"
-#include "utils.h"
 
 int	init_program(t_program *program)
 {

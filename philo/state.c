@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   state.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/13 10:05:16 by qjungo            #+#    #+#             */
+/*   Updated: 2023/03/13 10:06:15 by qjungo           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 t_bool	check_is_one_dead(t_philosopher *philosopher)
@@ -17,7 +29,8 @@ t_bool	check_is_dead(t_philosopher *philosopher)
 	if (philosopher->state == DEAD)
 		return (TRUE);
 	now = get_timestamp_from_start(philosopher->program->start_timestamp);
-	if (now - philosopher->last_meal_timestamp > philosopher->program->time_to_die)
+	if (now - philosopher->last_meal_timestamp
+		> philosopher->program->time_to_die)
 	{
 		philosopher->state = DEAD;
 		pthread_mutex_lock(&(philosopher->program->is_one_dead_mutex));

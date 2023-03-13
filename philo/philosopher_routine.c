@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosopher_routine.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/13 10:04:26 by qjungo            #+#    #+#             */
+/*   Updated: 2023/03/13 10:06:22 by qjungo           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include "philosophers.h"
 #include <unistd.h>
@@ -15,7 +27,8 @@ void	eat(t_philosopher *philosopher)
 {
 	philosopher->state = EATING;
 	ft_log(philosopher, "is eating");
-	philosopher->last_meal_timestamp = get_timestamp_from_start(philosopher->program->start_timestamp);
+	philosopher->last_meal_timestamp
+		= get_timestamp_from_start(philosopher->program->start_timestamp);
 	philosopher->eat_count++;
 	custom_sleep(philosopher->program->time_to_eat, philosopher->program);
 	drop_forks(philosopher);

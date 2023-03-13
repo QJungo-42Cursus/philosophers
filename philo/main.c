@@ -1,15 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/13 10:03:39 by qjungo            #+#    #+#             */
+/*   Updated: 2023/03/13 10:08:16 by qjungo           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "philosophers.h"
-#include "utils.h"
 
-#define INT_GREATER_THAN_ZERO " must be an integer greater than 0\n"
-#define INV_TIME_TO_DIE "Time to die"INT_GREATER_THAN_ZERO
-#define INV_TIME_TO_EAT "Time to eat"INT_GREATER_THAN_ZERO
-#define INV_TIME_TO_SLEEP "Time to sleep"INT_GREATER_THAN_ZERO 
-#define INV_N_OF_PHIL "N of philosophers"INT_GREATER_THAN_ZERO
+#define INV_TIME_TO_DIE "Time to die must be an integer greater than 0\n"
+#define INV_TIME_TO_EAT "Time to eat must be an integer greater than 0\n"
+#define INV_TIME_TO_SLEEP "Time to sleep must be an integer greater than 0\n"
+#define INV_N_OF_PHIL "N of philosophers must be an integer greater than 0\n"
 #define INV_MUST_EAT "times each phil. must eat must be an integer > 0\n"
 
 static int	return_print_error(char *str)
@@ -99,7 +109,7 @@ int	main(int argc, char **argv)
 	init_all(&program, &philosophers, &forks);
 	if (run(&program, philosophers) == ERROR)
 	{
-		// TODO free
+		free(philosophers);
 		return (ERROR);
 	}
 	return (SUCCESS);
