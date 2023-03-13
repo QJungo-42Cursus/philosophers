@@ -7,6 +7,7 @@ SRCS =			main.c \
 				philosopher_routine.c \
 				init.c \
 				state.c \
+				take_forks.c \
 				ft_atoi.c \
 				ft_time.c \
 				ft_log.c \

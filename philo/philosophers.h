@@ -60,6 +60,7 @@ int		init_philosophers(t_philosopher **philosophers,
 
 // state.c
 t_bool	check_is_one_dead(t_philosopher *philosopher);
+t_bool	check_is_dead(t_philosopher *philosopher);
 
 // ft_log
 void	ft_log(t_philosopher *philosopher, char *msg);
@@ -75,5 +76,9 @@ int		ft_atoi(const char *str);
 void	custom_sleep(long ms, t_program *program);
 long	get_timestamp(void);
 long	get_timestamp_from_start(long start);
+
+// take_forks.c
+void	take_forks(t_philosopher *philosopher);
+void	drop_forks(t_philosopher *philosopher);
 
 #endif /* PHILOSOPHERS_H */
