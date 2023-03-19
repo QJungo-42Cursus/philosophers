@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:03:57 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 12:09:45 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 13:26:58 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,41 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void	free_forks(t_fork *forks, t_program *program)
+void	free_mutexed(t_mutexed *mutexed)
+{
+	pthread_mutex_destroy(&mutexed->mutex);
+	free(mutexed);
+}
+
+void	free_forks(t_mutexed **forks, t_program *program)
 {
 	int	i;
 
 	i = 0;
 	while (i < program->n_philosopher)
 	{
-		pthread_mutex_destroy(&forks[i].mutex);
+		free_mutexed(forks[i]);
 		i++;
 	}
 	free(forks);
 }
 
-void	free_all(t_fork *forks, t_program *program, t_philosopher *philosophers)
+void	free_all(t_mutexed **forks,
+		t_program *program, t_philosopher *philosophers)
 {
+	int		i;
+
 	usleep(1000);
-	pthread_mutex_destroy(&program->print_mutex);
-	pthread_mutex_destroy(&program->is_one_dead_mutex);
-	free_forks(forks, program);
+	i = 0;
+	while (i < program->n_philosopher)
+	{
+		free_mutexed(philosophers[i].state);
+		free_mutexed(philosophers[i].eat_count);
+		i++;
+	}
 	free(philosophers);
+	free_mutexed(program->is_one_dead);
+	free_mutexed(program->start_timestamp);
+	free_forks(forks, program);
+	pthread_mutex_destroy(&program->print_mutex);
 }

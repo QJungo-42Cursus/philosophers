@@ -6,6 +6,8 @@ RM =			rm -f
 SRCS =			main.c \
 				philosopher_routine.c \
 				init.c \
+				mutexed.c \
+				mutexed_2.c \
 				state.c \
 				take_forks.c \
 				ft_atoi.c \
@@ -74,6 +76,10 @@ eval: all
 SAN =	-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all \
 		-fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow \
 		-fno-sanitize=null -fno-sanitize=alignment
+
+tsan: re
+	@gcc -g -fsanitize=thread $(SRCS) -o $(NAME)
+	./$(NAME) $(ARGS_DEAD)
 
 san:
 	@echo -e "San : $(ARGS_DEAD)\n\n" '\n'

@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:04:06 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 14:38:48 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 13:24:10 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,16 @@ void	ft_log(t_philosopher *philosopher, char *msg)
 {
 	static t_bool	one_died = FALSE;
 
-	if (one_died)
-		return ;
-	one_died = (ft_strncmp(msg, "died", 5) == 0);
 	pthread_mutex_lock(&(philosopher->program->print_mutex));
-	printf("%ld %d %s\n",
-		get_timestamp_from_start(philosopher->program->start_timestamp),
+	if (one_died)
+	{
+		pthread_mutex_unlock(&(philosopher->program->print_mutex));
+		return ;
+	}
+	one_died = (ft_strncmp(msg, "died", 5) == 0);
+	printf("%5ld %d %s\n",
+		get_timestamp_from_start(get_long_mutexed(
+				philosopher->program->start_timestamp)),
 		philosopher->index + 1, msg);
 	pthread_mutex_unlock(&(philosopher->program->print_mutex));
 }

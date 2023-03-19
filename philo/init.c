@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:04:10 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 12:00:51 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 13:56:03 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,65 +17,91 @@
 #include <stdlib.h>
 #include "philosophers.h"
 
-int	init_program(t_program *program)
+static int	init_program(t_program *program)
 {
 	if (pthread_mutex_init(&program->print_mutex, NULL) != SUCCESS)
 		return (ERROR);
-	program->is_one_dead = FALSE;
-	if (pthread_mutex_init(&program->is_one_dead_mutex, NULL) != SUCCESS)
+	program->is_one_dead = init_mutexed();
+	if (program->is_one_dead == NULL)
 	{
 		pthread_mutex_destroy(&program->print_mutex);
 		return (ERROR);
 	}
-	program->start_timestamp = 0;
+	set_boolean_mutexed(program->is_one_dead, FALSE);
+	program->start_timestamp = init_mutexed();
+	if (program->start_timestamp == NULL)
+	{
+		pthread_mutex_destroy(&program->print_mutex);
+		free_mutexed(program->is_one_dead);
+		return (ERROR);
+	}
+	set_long_mutexed(program->start_timestamp, 0);
 	return (SUCCESS);
 }
 
-int	init_forks(t_fork **forks, t_program *program)
+static int	init_forks(t_mutexed ***forks, t_program *program)
 {
-	int	i;
+	int		i;
 
-	*forks = malloc(sizeof(t_fork) * program->n_philosopher);
+	*forks = malloc(sizeof(t_mutexed *) * program->n_philosopher);
 	if (*forks == NULL)
 		return (ERROR);
 	i = 0;
 	while (i < program->n_philosopher)
 	{
-		(*forks)[i].index = i;
-		(*forks)[i].is_used = FALSE;
-		if (pthread_mutex_init(&(*forks)[i].mutex, NULL) != SUCCESS)
+		(*forks)[i] = init_mutexed();
+		if ((*forks)[i] == NULL)
 		{
 			free(*forks);
 			return (ERROR);
 		}
+		set_boolean_mutexed((*forks)[i], FALSE);
 		i++;
 	}
 	return (SUCCESS);
 }
 
-static int	set_fork_index(int index, t_program *program)
+static int	init_philosophers_norm(t_philosopher *philosopher,
+		int i, t_mutexed **forks, t_program *program)
 {
-	if (index == 0)
-		return (program->n_philosopher - 1);
-	return (index - 1);
+	int		fork_index;
+
+	philosopher->state = init_mutexed();
+	if (philosopher->state == NULL)
+		return (ERROR);
+	set_integer_mutexed(philosopher->state, WAITING);
+	philosopher->eat_count = init_mutexed();
+	if (philosopher->eat_count == NULL)
+	{
+		free_mutexed(philosopher->state);
+		return (ERROR);
+	}
+	set_integer_mutexed(philosopher->eat_count, 0);
+	philosopher->left_fork = forks[i];
+	if (i == 0)
+		fork_index = program->n_philosopher - 1;
+	else
+		fork_index = i - 1;
+	philosopher->right_fork = forks[fork_index];
+	return (SUCCESS);
 }
 
-int	init_philosophers(t_philosopher **philosophers,
-		t_program *program, t_fork *forks)
+static int	init_philosophers(t_philosopher **philosophers,
+		t_program *program, t_mutexed **forks, int i)
 {
-	int		i;
-
 	*philosophers = malloc(sizeof(t_philosopher) * program->n_philosopher);
 	if (*philosophers == NULL)
 		return (ERROR);
-	i = 0;
 	while (i < program->n_philosopher)
 	{
 		(*philosophers)[i].index = i;
 		(*philosophers)[i].program = program;
-		(*philosophers)[i].left_fork = &(forks[i]);
-		(*philosophers)[i].right_fork = &(forks[set_fork_index(i, program)]);
-		(*philosophers)[i].state = WAITING;
+		if (init_philosophers_norm(&(*philosophers)[i], i,
+			forks, program) == ERROR)
+		{
+			free(*philosophers);
+			return (ERROR);
+		}
 		if (pthread_create(&(*philosophers)[i].thread,
 			NULL, &philosopher_routine, &(*philosophers)[i]) != SUCCESS)
 		{
@@ -88,20 +114,22 @@ int	init_philosophers(t_philosopher **philosophers,
 }
 
 int	init_all(t_program *program, t_philosopher **philosophers,
-		t_fork **forks)
+		t_mutexed ***forks)
 {
 	if (init_program(program) == ERROR)
 		return (ERROR);
 	if (init_forks(forks, program) == ERROR)
 	{
-		pthread_mutex_destroy(&program->is_one_dead_mutex);
 		pthread_mutex_destroy(&program->print_mutex);
+		free_mutexed(program->is_one_dead);
+		free_mutexed(program->start_timestamp);
 		return (ERROR);
 	}
-	if (init_philosophers(philosophers, program, *forks) == ERROR)
+	if (init_philosophers(philosophers, program, *forks, 0) == ERROR)
 	{
-		pthread_mutex_destroy(&program->is_one_dead_mutex);
 		pthread_mutex_destroy(&program->print_mutex);
+		free_mutexed(program->is_one_dead);
+		free_mutexed(program->start_timestamp);
 		free_forks(*forks, program);
 		return (ERROR);
 	}

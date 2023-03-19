@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:05:22 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 10:10:54 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 12:14:22 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,23 @@
 #include <unistd.h>
 #define WAITING_TIME 10
 
-static int	take_one_fork(t_fork *fork)
+static int	take_one_fork(t_mutexed *fork)
 {
-	pthread_mutex_lock(&(fork->mutex));
-	if (fork->is_used == TRUE)
-	{
-		pthread_mutex_unlock(&(fork->mutex));
+	t_bool	is_used;
+
+	is_used = get_boolean_mutexed(fork);
+	if (is_used)
 		return (FALSE);
-	}
-	fork->is_used = TRUE;
-	pthread_mutex_unlock(&(fork->mutex));
+	set_boolean_mutexed(fork, TRUE);
 	return (TRUE);
 }
 
-static void	wait_to_take_one_fork(t_fork *fork, t_philosopher *philosopher)
+static void	wait_to_take_one_fork(t_mutexed *fork, t_philosopher *philosopher)
 {
 	while (TRUE)
 	{
-		if (check_is_dead(philosopher) || check_is_one_dead(philosopher))
+		if (check_is_dead(philosopher) || get_boolean_mutexed(
+				philosopher->program->is_one_dead))
 			return ;
 		if (take_one_fork(fork))
 		{
@@ -44,8 +43,8 @@ static void	wait_to_take_one_fork(t_fork *fork, t_philosopher *philosopher)
 
 void	take_forks(t_philosopher *philosopher)
 {
-	t_fork	*first_fork;
-	t_fork	*second_fork;
+	t_mutexed	*first_fork;
+	t_mutexed	*second_fork;
 
 	first_fork = philosopher->right_fork;
 	second_fork = philosopher->left_fork;
@@ -55,17 +54,14 @@ void	take_forks(t_philosopher *philosopher)
 		second_fork = philosopher->right_fork;
 	}
 	wait_to_take_one_fork(first_fork, philosopher);
-	if (check_is_dead(philosopher) || check_is_one_dead(philosopher))
+	if (check_is_dead(philosopher) || get_boolean_mutexed(
+			philosopher->program->is_one_dead))
 		return ;
 	wait_to_take_one_fork(second_fork, philosopher);
 }
 
 void	drop_forks(t_philosopher *philosopher)
 {
-	pthread_mutex_lock(&(philosopher->left_fork->mutex));
-	pthread_mutex_lock(&(philosopher->right_fork->mutex));
-	philosopher->left_fork->is_used = FALSE;
-	philosopher->right_fork->is_used = FALSE;
-	pthread_mutex_unlock(&(philosopher->left_fork->mutex));
-	pthread_mutex_unlock(&(philosopher->right_fork->mutex));
+	set_boolean_mutexed(philosopher->left_fork, FALSE);
+	set_boolean_mutexed(philosopher->right_fork, FALSE);
 }

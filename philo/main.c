@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:03:39 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 12:09:54 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 13:47:45 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ static int	run(t_program *program, t_philosopher *philosophers)
 	{
 		if (pthread_detach(philosophers[i].thread) != 0)
 			return (ERROR);
+		set_integer_mutexed(philosophers[i].state, READY);
 		i++;
 	}
 	return (SUCCESS);
@@ -75,25 +76,19 @@ int	main(int argc, char **argv)
 {
 	t_program		program;
 	t_philosopher	*philosophers;
-	t_fork			*forks;
+	t_mutexed		**forks;
 
 	if (parse_args_set_program(argc, argv, &program) == ERROR)
 		return (ERROR);
-	if (program.n_philosopher == 1)
-	{
-		usleep(program.time_to_die * 1000);
-		printf("%06d 1 died\n", program.time_to_die);
-		return (SUCCESS);
-	}
 	init_all(&program, &philosophers, &forks);
 	if (run(&program, philosophers) == ERROR)
 	{
-		free(philosophers);
+		free_all(forks, &program, philosophers);
 		return (ERROR);
 	}
 	while (!should_start(philosophers, &program))
-		usleep(10);
-	program.start_timestamp = get_timestamp();
+		usleep(100);
+	set_long_mutexed(program.start_timestamp, get_timestamp());
 	while (!should_stop(philosophers, &program))
 		usleep(100);
 	free_all(forks, &program, philosophers);

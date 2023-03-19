@@ -6,7 +6,7 @@
 /*   By: qjungo <qjungo@student.42lausanne.ch>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 10:05:10 by qjungo            #+#    #+#             */
-/*   Updated: 2023/03/13 11:51:57 by qjungo           ###   ########.fr       */
+/*   Updated: 2023/03/19 13:26:39 by qjungo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,13 @@ void	custom_sleep(long ms, t_program *program)
 	long	start;
 	long	now;
 
-	start = get_timestamp_from_start(program->start_timestamp);
+	start = get_timestamp_from_start(
+			get_long_mutexed(program->start_timestamp));
 	now = start;
 	while (now < ms + start)
 	{
 		usleep(10);
-		now = get_timestamp_from_start(program->start_timestamp);
+		now = get_timestamp_from_start(
+				get_long_mutexed(program->start_timestamp));
 	}
 }
